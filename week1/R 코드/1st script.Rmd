@@ -1,0 +1,177 @@
+---
+title: "1st script"
+output: github_document
+date: '2022-06-30'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+R markdown은 **R studio**에서 markdown 스크립트를 작성할 수 있게 해주는 형식이다.
+
+# (1) cheatsheet
+
+https://www.rstudio.com/resources/cheatsheets/
+
+
+----
+```{r}
+# table 작성법
+```
+
+|제목|내용|
+|:-:|----|
+|안녕하세요|안녕하세요|
+
+
+```{r}
+library(tidyverse)
+
+str(mpg)
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy))
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy, color="red"))
+
+# 아래와 같이 범주형 변수로 ggplot 가능
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy, color=class))
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy, size=class))
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy, alpha=class))
+
+```
+
+
+```{r}
+# aes 안에 안 넣어도 됨. -> 단 legend가 사라짐
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy), color="red")
+
+# 막대 그래프의 경우는 fill 사용.
+ggplot(data=mpg) +
+  geom_bar(mapping = aes(x=class, color="red"))
+ggplot(data=mpg) +
+  geom_bar(mapping = aes(x=class, fill="red"))
+
+# 여러 가지 가능
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy, color=class, size=class))
+
+# 조건문도 가능
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy, color= displ<5))
+```
+
+## (2). 면분할
+
+```{r}
+# facet
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy)) +
+  facet_wrap(~class, nrow=2)
+
+
+ggplot(data=mpg) +
+  geom_point(mapping = aes(x=displ, y=hwy)) +
+  facet_grid(drv~cyl)
+```
+
+
+```{r}
+ggplot(data=diamonds) +
+  geom_bar(mapping=aes(x=cut))
+
+
+ggplot(data=diamonds) +
+  geom_bar(mapping=aes(x=cut, fill=cut))
+
+
+ggplot(data=diamonds) +
+  geom_bar(mapping=aes(x=cut, fill=clarity))
+
+# 전역 mapping도 가능
+ggplot(data=diamonds, mapping=aes(x=cut, fill=clarity)) +
+  geom_bar()
+
+ggplot(data=diamonds, mapping=aes(x=cut, fill=clarity, y=price)) +
+  geom_point()
+
+# dodge
+ggplot(data=diamonds) +
+  geom_bar(mapping=aes(x=cut, fill=clarity), position="dodge")
+
+
+
+  
+```
+
+
+## (3) 좌표계 _ coordinate System on cheatsheet
+```{r}
+ggplot(data=diamonds) +
+  geom_bar(mapping=aes(x=cut, fill=clarity), position="dodge") +
+  coord_polar()
+
+ggplot(data=diamonds) +
+  geom_bar(mapping=aes(x=cut, fill=clarity), position="dodge") +
+  coord_flip()
+
+
+
+```
+
+
+[정리]
+ggplot(data="내가 쓸 데이터") + 
+  <geom 함수>(mapping = aes(mapping 모음), stat=<stat>, position=<dodge같은거>) +
+  <좌표계 (coord) 함수> +
+  <facet(면분할)>
+  
+  
+```{r}
+str(diamonds)
+
+diamonds_test <- sample(1:nrow(diamonds), size=1000, replace=F)
+diamonds_test <- diamonds[diamonds_test,]
+
+
+fit_lr <- lm(price~carat+cut+clarity, data=diamonds_test)
+
+pred <- fit_lr$fitted.values
+real <- diamonds_test$price
+
+# scale_color_manual ; color에 대해서 내가 정해주겠다!
+ggplot(data=data.frame(x=diamonds_test$carat, pred=pred, real=real)) +
+  geom_point(mapping=aes(x=x, y=real, color="black")) +
+  geom_point(mapping=aes(x=x, y=pred, color="red"), alpha=0.5) +
+  scale_color_manual(values=c("black", "red"),
+                     labels=c("real", "pred"),
+                     name="real / pred") +
+  geom_smooth(mapping=aes(x=x, y=pred, color="red")) + 
+  geom_smooth(mapping=aes(x=x, y=real, color="black")) +
+  labs(x="carat", y="price", title="diamonds data regression")
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
