@@ -1,0 +1,827 @@
+---
+title: "2nd script"
+output: github_document
+date: '2022-07-07'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# 1. 라이브러리 설정하기
+```{r}
+library(tidyverse)
+library(MASS)
+```
+
+# 2. 데이터 타입
+```{r}
+# numeric
+x1 <- 10
+x2 <- 10.2
+# character ; r에서는 ""도 가능 / ''도 가능
+
+# logical
+
+```
+
+## (1) 데이터 타입 확인 함수
+```{r}
+mode(x1)
+typeof(x2)
+```
+
+## (2) 데이터 타입 변환
+```{r}
+x1 <- as.character(x1)
+```
+
+
+# 3. 연산자 
+
+## (1) 산술 연산자
+```{r}
+3 ** 4 #거듭제곱
+3^4
+
+4 %/% 3 # 나눗셈(몫만 구하기)
+13 %% 4 # 나눗셈(나머지만 구하기)
+```
+
+
+## (2) 비교 연산자
+```{r}
+3 > 4
+
+3 == 4
+
+!(3==4)
+
+
+3 %in% c(3,4,5)
+
+```
+
+
+## (3) 논리 연산자
+```{r}
+# && ; 그리고
+
+# || ; 또는
+
+
+```
+
+
+# 3. R의 자료구조
+
+
+
+## (1) vector
+
+하나의 열(column)으로 구성. 1차원 구조.
+
+데이터 분석의 기본 단위가 됨.
+
+하나의 유형만 가질 수 있음.
+
+```{r}
+num_vector <- c(1,2,3,4,5)
+character_vector <- c("가", "나", "다", "라", "마")
+logical_vector <- c(F, F, T, T, T)
+```
+
+
+### vector 초기값
+```{r}
+vector(mode="numeric", length=10)
+vector(mode="character", length=10)
+vector(mode="logical", length=10)
+```
+
+### vector 이름 설정
+```{r}
+height <- c(160, 170, 180)
+names(height)
+
+names(height) <- c("A", "B", "C")
+
+height["B"]
+```
+
+### vector 정보 확인하기
+```{r}
+length(height)
+mode(height)
+is.vector(height)
+```
+
+### vector의 인덱싱 / 슬라이싱
+```{r}
+weight <- c(10,50,70,55,56,32)
+
+# 첫 번째 요소를 보고 싶다
+weight[1]
+
+# 짝수 element 확인하고 싶다
+weight[seq(from=2, to=6, by=2)]
+
+
+# 슬라이싱
+weight[2:length(weight)]
+```
+
+
+### vectorization, Recycling Rule
+```{r}
+x <- c(1,2,3,4,5)
+y <- c(10,20,30,40,50)
+z <- c(1,2,3)
+
+#vectorization
+x + y # 이게 자동적으로 됨.
+
+#recycling rule
+y + z 
+
+
+```
+
+## (2) Factor
+
+범주형 자료를 생성할 수 있는 1차원 구조
+하나의 데이터 유형만 가진다.
+
+oredere = TRUE : 순서형 자료
+
+```{r}
+at <- c("A", "B", "C", "A", "B")
+
+at1 <- factor(at, levels=c("B","A","C"))
+at2 <- factor(at, levels=c("B","A","C"), ordered=T)
+```
+
+Factor의 인덱싱, 슬라이싱은 vector와 동일
+
+
+### Factor의 속성
+```{r}
+nlevels(at1) # 범주의 수
+is.factor(at1)
+
+```
+
+
+## (3). Matrix
+
+행렬이라고 부르는 행(row)과 열(column)로 구성된 2차원 구조
+
+머신러닝 + 통계 수식에서 많이 쓰이게 된다.
+
+Vector의 확장 버전
+
+
+### 여러 개의 벡터를 합쳐서 Matrix 만들기
+```{r}
+v1 <- 1:3
+v2 <- 4:6
+v3 <- 7:9
+
+matrix1 <- rbind(v1, v2, v3)
+matrix2 <- cbind(v1, v2, v3)
+
+matrix1
+matrix2
+```
+
+### matrix 함수로 만들기
+```{r}
+matrix3 <- matrix(data = 1:9, nrow=3, ncol=3)
+matrix3
+```
+
+
+### matrix의 속성
+```{r}
+nrow(matrix1) # 행
+ncol(matrix2) # 열
+
+rownames(matrix1)
+colnames(matrix1)
+
+dim(matrix1)
+
+```
+
+
+### matrix의 인덱싱/슬라이싱
+```{r}
+M <- mvrnorm(n=10, mu=rep(0, times=10), Sigma=diag(10))
+
+dim(M)
+
+# 인덱싱
+M[1,] 
+M[,1] 
+
+#슬라이싱
+M[1:5,] 
+M[,1:5]
+```
+
+### Matrix 연산
+```{r}
+matrix1 %*% matrix2 # 행렬곱
+
+inverse_M <- solve(M) #역행렬
+
+inverse_M%*%M # 역행렬 확인
+
+```
+
+solve(a,b) 함수는 가우스-조르단 소거법(첨가행렬법)을 사용함
+$$Ax=b$$
+a=A, b=b에 대응된다. 이때, b의 default값은 단위행렬이다.
+
+```{r}
+inverse_M <- solve(a=M, b=diag(10))
+
+inverse_M %*% M
+```
+
+$$Mx=0$$
+```{r}
+solve(a=M, b=rep(0,times=10)) 
+# 0으로 나오는 이유는 M의 공분산이 diag로 x들끼리의 covariate이 없기 때문
+```
+
+
+## (4). Array
+
+3차원 이상의 구조, deep learning에서 사용되는 음성, 이미지, 영상 데이터 정보를 표현하기 위해 사용된다.
+
+```{r}
+array1 <- array(1:5, dim=c(2,2,2)) # 리싸이클링 룰이 사용되므로 가능
+array1
+```
+
+## (5). DataFrame
+
+행과 열로 구성되어 있으며 각 열(column)마다 서로 다른 데이터 타입을 가질 수 있다.
+
+```{r}
+v1 <- c(1,2,3)
+v2 <- c("A","B","C")
+v3 <- factor(c("양성","음성","음성"), levels=c("음성","양성"))
+
+df1 <- data.frame(v1,v2,v3)
+
+# 변수 이름을 한글로 하고 싶으면 ` 이걸로 가둬줘야 함
+df2 <- data.frame(`번호`=v1, `코드`=v2, `판정`=v3)
+
+df2$코드 # 인덱싱
+```
+
+## (6). List
+
+1차원 자료 구조. 모든 자료 구조(벡터, 매트릭스, 데이터프레임)를 전부 포함할 수 있다.
+
+일반적으로 모델 분석 결과를 저장하는 형식이 된다.
+
+```{r}
+list1 <- list(v1, matrix1, df2)
+list2 <- list(list1, v1, matrix1, df2)
+
+names(list2) <- c("list", "vector","matrix","dataframe") 
+
+list1
+list2
+
+list2$list
+list2$vector # return = 원래 자기 형식(벡터)
+
+list2[2] # return = list형식
+list2[[2]] # return = 원래 자기 형식(벡터)
+```
+
+
+# 5. 데이터 저장/불러오기
+
+
+## (1). txt 파일
+txt문서 작성 :  write.table
+
+txt문서 읽기 : read.table
+
+```{r}
+# 제목이 있음 / 각 요소들이 ,(comma)로 구분되어 있음
+W1 <- read.table(file="C://Users//Miru//Desktop//example1.txt",
+                 sep=",", header = T)
+W1 %>% head()
+
+# 제목 있음 / 각 요소들이 (spacebar)로 구분 되어 있음
+W2 <- read.table(file="C://Users//Miru//Desktop//example2.txt",
+                 sep=" ", header = T)
+
+
+# 제목 있음 / 각 요소들이 (tab)로 구분 되어 있음
+W3 <- read.table(file="C://Users//Miru//Desktop//example3.txt",
+                 sep="\t", header = T)
+
+```
+
+
+## (2). csv 파일
+
+readr::write_csv, readr::read_csv : 얘네가 c++로 작성되어서 더 빠름
+
+```{r}
+install.packages("readr")
+library(readr)
+W <- read_csv(file="C://Users//Miru//Desktop//example.csv",
+              col_names = T)
+```
+
+excel, SQL, SAS, SPSS 등의 파일들도 읽어올 수 있음
+
+다른 패키지 필요함.
+
+# 6. 데이터 변형하기
+
+```{r}
+library(nycflights13)
+```
+
+dplyr **핵심 함수**
+
+|함수명|기능|
+|:-:|:-:|
+|filter()|값을 기준으로 행 선택|
+|select()|이름으로 열(변수)을 선택|
+|mutate()|기존 변수들의 함수로 새로운 변수 생성|
+|arrange()|행을 재정렬|
+|summarize()|하나의 요약값으로 만들기|
+|group_by()|그룹마다 동작하도록 설정|
+
+위의 함수들은 다음과 같은 공통점이 있다.
+(1) 첫 인수는 데이터 프레임이다.
+(2) 그 이후의 인수들은 따옴표없이 변수 이름을 사용한다.
+(3) 데이터 프레임을 반환한다.
+
+## (1). filter()
+```{r}
+str(flights) # tibble은 걍 dataframe이라고 생각하면 됨.
+
+# 1월 1일인 행만 추출
+month1_day1 <- dplyr::filter(flights, month==1, day==1)
+
+# pipe를 이용한 dplyr : 파이프는 모든 함수에 사용할 수 있는 거 였음.
+flights %>% filter(month==11 | month==12) %>% head()
+
+flights %>% filter(month %in% c(11,12)) %>% head()
+
+# 아래 두 식은 동일한 표현이다.
+filter(flights, !(arr_delay>120 | dep_delay>120))
+filter(flights, arr_delay<=120 & dep_delay<=120)
+
+df <- data.frame(x=c(1,NA,3))
+
+# filter는 false가 나오는 건 모두 제외 따라서 NA 는 안나옴
+filter(df, x>1)
+```
+
+(1) filter를 이용하여 dest가 IAH 또는 HOU으로 운항하는 행을 찾아라.
+```{r}
+str(flights)
+
+flights %>% filter(dest=="IAH" | dest=="HOU")
+
+flights %>% filter(carrier %in% c("UA","AA","DL"))
+```
+
+## (2) arrange()로 행 정렬하기
+```{r}
+# 오름차순으로 정렬해주는 함수
+arrange(flights, year, month, day)
+
+# desc를 이용하여 month만 내림차순으로 정렬
+arrange(flights, year, desc(month))
+
+# 음수로 바꾸어 줌
+desc(c(1:3))
+
+
+# desc를 이용하여 NA값이 먼저 나오도록 설정
+arrange(flights, desc(is.na(dep_time)))
+```
+
+
+## (3) select()로 열 선택하기
+
+starts_with("char") : 해당 문자로 시작하는 변수에 매칭
+
+ends_with("char") : 해당 문자로 끝나는 변수에 매칭
+
+contains("char") : 해당 문자를 포함하는 변수에 매칭
+
+matches("(.)\\1") : 정규표현식에 매칭되는 변수 선택
+
+num_range("x",1:3) : x1, x2, x3에 매칭되는 변수 선택
+
+```{r}
+dplyr::select(flights, year, month, day)
+dplyr::select(flights, year:day)
+
+
+# 선택한 걸 빼고 싶으면
+dplyr::select(flights, -c(year:day), everything())
+
+# d로 시작하는 변수명인 애들을 가져옴.
+dplyr::select(flights, starts_with("d"))
+```
+
+
+## (4) mutate()로 새로운 변수 추가하기
+```{r}
+sample_flights <- flights %>% dplyr::select(year:day, 
+                                            ends_with("delay"),
+                                            distance,
+                                            air_time)
+
+sample_flights %>% head()
+```
+
+```{r}
+dplyr::mutate(sample_flights,
+              gain=arr_delay - dep_delay,
+              speed = distance / air_time * 60,
+              hours = air_time/60,
+              gain_per_hour=gain/hours) %>% head()
+
+# 새로 만든 변수만 나옴.
+dplyr::transmute(sample_flights,
+              gain=arr_delay - dep_delay,
+              speed = distance / air_time * 60,
+              hours = air_time/60,
+              gain_per_hour=gain/hours) %>% head()
+
+dplyr::mutate(sample_flights,
+              dummy_month=ifelse(month>6, 1, 0)) %>% head()
+```
+
+cumsum() : 누적 합계
+cumprod() : 누적 곱셈
+cummin() : 누적 최솟값
+cummax() : 누적 최댓값
+cummean() : 누적 평균
+
+```{r}
+dplyr::mutate(sample_flights,
+              cum_min = cummin(dep_delay),
+              cum_max = cummax(dep_delay),
+              cum_sum = cumsum(dep_delay))
+```
+
+## (5). summarize()로 그룹화 요악하기
+
+group_by를 통해 분석의 단위를 전체 데이처셋에서 개별 그룹으로 변경할 수 있다.
+
+그룹마다 함수를 적용할 수 있다.
+
+```{r}
+# n은 summarise 안에서 변수의 개수를 세주는 함수
+dplyr::summarise(flights,
+                 n=n(),
+                 delay=mean(dep_delay, na.rm=T)) %>% head()
+
+# group_by와 같이 쓸 경우
+flights %>% 
+  dplyr::group_by(year, month) %>%
+  dplyr::summarise(n=n(),
+                 delay=mean(dep_delay, na.rm=T)) %>% head()
+  
+```
+
+유용한 요약함수들
+
+median()
+sd()
+IQR()
+mad() : 중위절대편차 - 이상치 있을 때 좋은 요약치
+n() : 현재 그룹의 크기를 반환
+
+```{r}
+flights %>% 
+  dplyr::select(year, month, day, dep_time) %>%
+  dplyr::filter(is.na(dep_time) == F) %>%
+  dplyr::group_by(year, month) %>%
+  dplyr::summarise(n=n(),
+                   dep_mean=mean(dep_time))
+```
+
+
+# 7. 탐색적 데이터 분석(EDA)
+
+EDA는 데이터 분석에서 가장 중요한 부분을 차지한다.
+
+EDA의 목표는 데이터를 이해하는 것.
+
+## (1). 변동(variation)
+
+변수들의 고유한 변동 패턴을 파악하기 위해 변수들 값의 **분포를 시각화**하는 것이 좋다.
+
+```{r}
+# 히스토그램을 이용하여 데이터 분포 확인하기
+ggplot(data=diamonds) +
+  geom_histogram(mapping=aes(x=carat), bins=100)
+
+
+
+cut_width(diamonds$carat, 0.5) %>% table()
+
+# cut_width를 활용하여 데이터 분포 확인하기
+diamonds %>%
+  dplyr::count(cut_width(carat, 0.5)) %>% head()
+
+# geom_freqpoly()를 사용하여 여러 개의 히스토그램을 겹쳐서 그리기
+ggplot(data=diamonds, mapping=aes(x=carat, color=cut)) +
+  geom_freqpoly()
+```
+
+
+변동의 이상값을 확인(비정상적인 관측값)
+
+```{r}
+ggplot(data=diamonds) +
+  geom_histogram(mapping=aes(x=y),
+                 binwidth = 0.5) + 
+  coord_cartesian(ylim=c(0,50))
+```
+
+# 실습3 - 연습문제
+```{r}
+# (1) diamonds의 x,y,z 변수의 분포를 탐색하자.
+# 어떤 치수가 길이 너비 깊이인지 결정해보자.
+str(diamonds[,c("x","y","z")])
+
+ggplot(data=diamonds) +
+  geom_histogram(mapping=aes(x=x, fill="green"),
+                 alpha=0.5,
+                 bins=1000) +
+  geom_histogram(mapping=aes(x=y, fill="red"),
+                 alpha=0.5,
+                 bins=1000) +
+  geom_histogram(mapping=aes(x=z, fill="blue"),
+                 alpha=0.5,
+                 bins=1000) +
+  coord_cartesian(xlim=c(0,20))
+
+# (2) price의 분포를 확인하기(binwidth 사용)
+ggplot(data=diamonds) +
+  geom_freqpoly(mapping=aes(x=price, color=cut),
+                binwidth=10)
+
+# (3) 0.99캐럿인 다이아몬드의 개수와 1캐럿인 다이아몬드의 개수 확인하기
+diamonds %>% 
+  dplyr::filter(carat==0.99 | carat==1) %>%
+  dplyr::group_by(carat) %>%
+  dplyr::summarise(n=n())
+
+nrow(diamons[diamonds$carat==0.99,])
+nrow(diamons[diamonds$carat==1,])
+
+# (4) xlim, ylim 함수와 coord_cartesian 함수 비교해보기
+ggplot(data=diamonds) +
+  geom_histogram(mapping=aes(x=price), bin=100) +
+  ggplot2::xlim(0,10000)
+
+ggplot(data=diamonds) +
+  geom_histogram(mapping=aes(x=price), bin=100) +
+  coord_cartesian(xlim=c(0,10000))
+
+# 막대의 절반만 확대해서 보여주기
+ggplot(data=diamonds) +
+  geom_histogram(mapping=aes(x=price), bin=100) +
+  coord_cartesian(xlim=c(0,max(diamonds$price)/2))
+```
+
+# 결측값
+
+데이터 셋에서 **이상값을 발견하고 다음 분석으로 넘어가고자 할 때,** 다음의 두 가지 옵션이 있다.
+
+**(1) 이상값이 포함된 행 전체를 삭제한다.**
+**(2) 이상값을 결측값으로 변경한다.**
+
+## 실습 + 연습문제 : 결측값에 대하여
+```{r}
+# 이상값이 포함된 행 전체를 제외하고, 다른 객체에 저장하기
+diamonds2 <- diamonds %>%
+  filter(between(y,3,20))
+
+# 이상값을 단순히 결측치로 변환하기
+diamonds2 <- diamonds %>%
+  mutate(y=ifelse(y<3|y>20, NA, y))
+
+# na.rm으로 결측치는 제외하고 그래프로 그려보기
+ggplot(data=diamonds2) +
+  geom_point(mapping=aes(x=x, y=y), na.rm=T)
+
+ggplot(data=diamonds2) +
+  geom_histogram(mapping=aes(x=carat), na.rm=T, bins=30)
+  
+```
+# 공변동
+
+변동이 변수 내의 움직임을 설명한다면 **공변동은 변수들 간의 움직임을 설명한다.**
+
+공변동은 **둘 이상의 변숫값이 연관되어 동시에 변하는 경향**을 말한다.
+
+마치 **공분산**과도 같다.
+**공변동을 발견하는 가장 좋은 방법은 시각화하는 것이다.**
+
+## 공변동 - 범주형 변수와 연속형 변수
+
+```{r}
+# 다이아몬드의 가격이 품질에 따라 어떻게 달라질까?
+
+# (1) 전체적인 빈도수가 다르므로 분포의 차이를 파악하기는 어려울 것이다.
+
+ggplot(data=diamonds, mapping=aes(x=price)) +
+  geom_freqpoly(mapping=aes(color=cut), binwidth=500)
+
+# (2) 전체 빈도수가 다르므로 비율을 통해 나타내고 싶다.
+# (3) 따라서 빈도수로 나타내는 대신에 빈도 다각형 아래의 영역이 1이 되도록 빈도수를 표준화한다.
+
+ggplot(data=diamonds, mapping=aes(x=price, y=..density..)) +
+  geom_freqpoly(mapping=aes(color=cut), binwidth=500)
+```
+놀랍게도, **fair의 평균가격이 가장 높게 나왔다.** 이것은 아마도, 데이터에서 **전처리를 해야 하는 부분이 조금 남아있기 때문일것이다.**
+
+범주형 변수로 구분된 연속형 변수의 분포를 나타내는 또 다른 방법은 **박스 플롯**이다.
+
+## boxplot의 구성요소
+1. **사분위수 범위(IQR)**에서 Q1, Q2, Q3는 **분포의 대략적인 범위와 분포의 중앙값이 대칭인지 또는 한쪽으로 치우쳤는지**를 나타낸다.
+
+2. 상자의 가장자리에서 **1.5배 이상 떨어진 관측값을 나타내는 점**
+
+3. 상자의 양끝에서 뻗어나와 가장 멀리 떨어진 **이상값이 아닌 점까지 이어진 선.**
+
+```{r}
+# 상자그림 그려보기
+ggplot(data=diamonds, mapping=aes(x=cut, y=price)) +
+  geom_boxplot()
+
+# 정렬해서 상자그림 그려보기
+ggplot(data=diamonds, mapping=aes(x=reorder(cut,price,FUN=median), y=price)) +
+  geom_boxplot() 
+
+# coord_flip()을 이용하여 상자그림을 뒤집을 수 있다.
+ggplot(data=diamonds, mapping=aes(x=reorder(cut,price,FUN=median), y=price)) +
+  geom_boxplot() +
+  coord_flip()
+```
+
+## 공변동 - 연습문제1
+```{r}
+# (1) 다이아몬드 데이터셋의 어떤 변수가 다이아몬드의 가격을 예측하는 데 가장 중요한가?
+
+# boxplot으로 보았을 때, 확실히 fair의 평균 가격이 더 높다는 것을 확인할 수 있다.
+ggplot(data=diamonds, mapping=aes(x=cut, y=price)) +
+  geom_boxplot()
+
+# 이상치 때문일 수 있으니 확인
+ggplot(data=diamonds, mapping=aes(x=price, y=carat)) +
+  geom_smooth(mapping=aes(group=cut, color=cut))
+
+# (2) lvplot을 설치하고 geom_lv()를 사용 컷팅에 따른 가격의 분포를 나타냄
+library(lvplot)
+
+# 이상값이 줄어드는 것 같긴 함.
+ggplot(data=diamonds) +
+  geom_lv(mapping=aes(x=cut, y=price))
+```
+
+## 공변동 - 두 개의 범주형 변수 + 연습문제 2
+### **geom_count()함수**를 이용하여, 범주형 변수들의 각 조합에 대한 관측값의 수를 셀 수 있다.
+
+```{r}
+# count를 통해서 두 범주형 변수의 공변동 확인하기
+ggplot(data=diamonds) +
+  geom_count(mapping=aes(x=cut, y=color))
+
+# geom_tile()함수와 fill()로 더 예쁘게 시각화하기
+diamonds %>%
+  count(color, cut) %>%
+  ggplot(mapping=aes(x=color, y=cut)) +
+  geom_tile(mapping=aes(fill=n))
+
+
+# (1) 컷팅의 분포 또는 컷팅 내에서 색상의 분포를 좀 더 명확하게 보여주기 위해서 데이터 정렬이 필요
+diamonds %>% 
+  count(color, cut) %>%
+  ggplot(mapping=aes(x=reorder(color,n,FUN=function(x) desc(median(x))), y=cut)) +
+  geom_tile(mapping=aes(fill=n))
+
+
+```
+
+## 공변동 - 두 개의 연속형 변수
+** 두 개의 연속형 변수 사이의 공변동**을 시각화하는 좋은 방법 중 하나로, **산점도**를 그렸다.
+
+1. 기본적인 **geom_point** 사용하기
+2. 데이터의 수가 많아 구분이 어려울 때는, **geom_bin2d** 혹은 **geom_hex** 사용하기
+3. **geom_boxplot**을 이용하여 포현하기(varwidth 심미성과 cut_number()사용)
+
+**cut_number(x, n=NULL, ...)** : numeric type의 벡터 x를 n개 만큼 나누어 factor형으로 변환
+
+**cut_width(x,width)** : numeric type의 벡터 x를 width단위로 나누어서 factor형으로 변환
+
+```{r}
+# geom_point 사용해보기
+ggplot(data=diamonds) +
+  geom_point(mapping=aes(x=carat, y=price), position="jitter")
+
+# 2차원 bin을 사용하여 더 쉽게 보이도록 하기
+library(hexbin)
+
+ggplot(data=diamonds) +
+  geom_bin2d(mapping=aes(x=carat, y=price))
+
+
+ggplot(data=diamonds) +
+  geom_hex(mapping=aes(x=carat, y=price))
+
+
+# 그룹화를 통해서 박스플롯 그리기
+ggplot(data=diamonds, mapping=aes(x=carat, y=price)) +
+  geom_boxplot(mapping=aes(group=cut_width(carat, 0.1)))
+
+# 박스플로의 너비를 범의 개수와 비례하도록 설정하기
+
+# varwidth=T를 할 경우, 박스플로의 너비를 점의 개수와 비례하도록 설정할 수 있다.
+ggplot(data=diamonds, mapping=aes(x=carat, y=price)) +
+  geom_boxplot(mapping=aes(group=cut_width(carat,0.1)),
+               varwidth=T)
+
+# 또는 cut_number를 사용할 수 있다.
+ggplot(data=diamonds, mapping=aes(x=carat, y=price)) +
+  geom_boxplot(mapping=aes(group=cut_number(carat,20)))
+```
+
+## 공변동 - 연습문제3
+```{r}
+# (1) price로 구분된 carat의 분포 시각화하기
+
+# 방법 1
+ggplot(data=diamonds) +
+  geom_point(mapping=aes(x=carat, y=price, color=cut_number(price,10)))
+
+
+# 방법 2
+ggplot(data=diamonds) +
+  geom_point(mapping=aes(x=carat,y=price, color=cut_number(price,10))) +
+  facet_grid(.~cut_number(price,10))
+
+
+
+
+```
+
+# 패턴과 모델
+
+데이터의 패턴은 상관관계에 대한 단서를 제공한다. **두 변수 사이에 규칙적인 관계가 존재하면 데이터의 패턴으로 나타난다.**
+
+패턴은 공변동을 나타내기 때문에 데이터 과학자에게 가장 유용한 도구 중 하나이다.
+두 개의 변수가 함께 변동하면 한 변수의 값을 사용하여 다른 변수의 값을 잘 예측할 수 있다.
+**모델은 데이터에서 패턴을 추출하는 도구이다.**
+
+**carat으로 price를 예측하는 모델을 적합**시킨 다음, **잔차**를 계산한다. 그후, **잔차를 이용하여 가격에 대한 관점**을 얻을 수 있다.
+
+**예측값은 carat의 효과라고 볼 수 있다. carat 하나만을 독립변수로 두고 예측한 값이기 때문이다.**
+
+**그렇기 때문에 해당 잔차는 전체 변수의 효과 중 carat의 효과만 제거된 다이아몬드의 가격이라고 볼 수 있는 것이다.**
+
+```{r}
+# 회귀모형 적합
+mod <- lm(log(price) ~ log(carat), data=diamonds)
+summary(mod)
+
+library(modelr)
+
+# 잔차를 추가하는 함수 add_residuals()
+diamonds2 <- diamonds %>%
+  add_residuals(mod) %>%
+  mutate(resid=exp(resid))
+
+# carat과 잔차 시각화해보기
+ggplot(data=diamonds2) +
+  geom_point(mapping=aes(x=carat, y=resid))
+
+
+
+# carat과 price의 강한 상관관계를 제거하면, 예상할 수 있었던 커팅과 가격의 상관관계를 얻을 수 있다.
+ggplot(data=diamonds2) +
+  geom_boxplot(mapping=aes(x=cut, y=resid))
+```
+
