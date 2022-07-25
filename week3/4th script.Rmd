@@ -1,5 +1,5 @@
 ---
-title: "4th script"
+title: "4th script_stringr"
 output: github_document
 date: '2022-07-16'
 ---
