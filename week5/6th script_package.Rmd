@@ -31,7 +31,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## (3). 패키지를 위한 Rstudio 열기
 
-File > New project > New directory > R Package using devtools 에서 파일 이름을 정하고 project를 만듦.
+File > New project > New directory > R Package using devtools 에서 파일 이름(이때 파일 이름이 패키지 이름임)을 정하고 project를 만듦.
 
 DESCRIPTION과 NAMESPACE, R(폴더) 파일이 뜸
 
@@ -83,4 +83,24 @@ DESCRIPTION과 NAMESPACE, R(폴더) 파일이 뜸
 
 - 자세한 사항은 아래 링크 참조 : https://r-pkgs.org/
 
+## (6). Package 완성 후
 
+- 패키지를 모두 완성 한 후에는 
+- document()를 사용하여 
+- 해당 패키지의 documentation을 업데이트하고 로딩하고 나면 이제 스크립트에서 내가 만든 패키지 install 후 사용할 수 있게 됨.
+
+
+- 만약에 document()로 해결이 안되면 
+- setwd("./패키지이름")  # 내 경우는 setwd("./Graduation")
+- document()
+
+
+- install 코드는 다음과 같음
+- setwd(...) # 여기에는 project의 wd를 쓰면 됨. 
+- install("패키지 이름") # 이때 패키지 이름은 내가 만든 폴더의 이름!
+
+
+- 나는 Graduation이라는 proj를 만들었고 위치는 now>graduation paper>algoritm 에 위치해 있었음.
+- setwd("C:\\Users\\USER\\Desktop\\now\\grduation paper\\algorithm")
+- install("Graduation")
+- library(Graduation)
