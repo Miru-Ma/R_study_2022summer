@@ -104,3 +104,11 @@ DESCRIPTION과 NAMESPACE, R(폴더) 파일이 뜸
 - setwd("C:\\Users\\USER\\Desktop\\now\\grduation paper\\algorithm")
 - install("Graduation")
 - library(Graduation)
+
+## (7). package 수정 후, update가 안 될 때
+
+- package 만든 R 프로젝트 파일로 들어가서 수정한 스크립트에서 Build > Install package 클릭
+- R studio 끄고 다시 틀어서 돌려보기
+- Tools > Project Options > Build Tools > Generate documentation with Roxygen 체크
+- 위 경로 그대로 들어가서 configure 클릭
+- 그 후, NAMESPACE file 체크 & Install and Restart 체크
